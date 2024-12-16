@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SalesWebMvc.Data;
 using SalesWebMvc.Models;
 using SalesWebMvc.Services;
+using System.Globalization;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SalesWebMvcContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("SalesWebMvcContext"), new MySqlServerVersion(new Version(2, 1, 1)), bb => bb.MigrationsAssembly("SalesWebMvc")));
@@ -15,6 +18,16 @@ builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+var enUs = new CultureInfo("en-US");
+var localizationOptions = new RequestLocalizationOptions()
+{
+    DefaultRequestCulture = new RequestCulture(enUs),
+    SupportedCultures = new List<CultureInfo> { new CultureInfo("en-US") },
+    SupportedUICultures = new List<CultureInfo>() { new CultureInfo("en-US") }
+};
+
+app.UseRequestLocalization(localizationOptions);
 
 if (app.Environment.IsDevelopment())
 {
